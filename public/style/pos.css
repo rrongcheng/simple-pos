@@ -1,0 +1,151 @@
+
+:root{
+  --side-menu-size: 8em;
+  --menu-size: 4em;
+  --keyboard-btn-size: 5em;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display:flex;
+  flex-wrap:wrap;
+}
+.list {
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+}
+.col-fix {
+  flex: 0 0 auto;
+}
+.col-dyn {
+  flex: 1 1 auto;
+}
+.col-half{
+  width:50%;
+}
+#pos {
+  border: 1px solid #000000;
+  background-color: #dddddd;
+  height: 100vh;
+}
+#pos>div {
+  padding: 10px;
+}
+#left{
+  height: 100%;
+  
+  background-color: rgb(144, 241, 191);
+}
+
+#right{
+  height: 100%;
+  background-color: rgb(174, 228, 243);
+  display: flex;
+}
+#global_discount>input{
+  width: 3em;
+}
+#global_discount::after{
+  content: "%";
+}
+#list>table{
+  width: 100%;
+}
+#list>table tr td:not(:first-child){
+  text-align: right;
+}
+#list{
+  min-height: 10em;
+}
+div.right{
+  width: 50%;
+  margin-left:auto;
+}
+div.right>div{
+  display: flex;
+}
+div.right>div *:first-child{
+  flex : 1 1 auto;
+}
+div.keybord{
+  border: 1px solid #000000;
+  padding: 2px;
+  width: calc(var(--keyboard-btn-size) * 4)
+}
+div.keybord button{
+  width: var(--keyboard-btn-size);
+  height: var(--keyboard-btn-size);
+}
+div.keybord .cmd_pay{
+  width: calc(var(--keyboard-btn-size) * 4);
+}
+div.keybord .cmd_pay div:nth-child(2) button{
+
+}
+div.num-pad{
+  display: flex;
+  flex-flow: wrap;
+  width: calc(var(--keyboard-btn-size)*3);
+}
+
+ul.side-menu {
+  flex-flow: column
+}
+ul.side-menu > li > button {
+  width: var(--side-menu-size);
+  height: var(--side-menu-size);
+}
+ul.menu {
+  flex-flow:wrap;
+  padding-bottom:10px;
+}
+ul.menu > li > button {
+  padding: 0 10px;
+  height: var(--menu-size);
+}
+#unresolved_orders button {
+  width: 4em;
+  height: 3em;
+}
+#dish_list{
+  height: 30vh;
+  border: 1px solid #000000;
+  padding: 5px;
+  background-color: aliceblue;
+}
+#dish_list .list-item{
+  padding: 5px 0px;
+}
+#dish_list .list-item div:nth-child(2){
+  width: 3em;
+}
+#dish_list .list-item div:nth-child(3){
+  text-align-last:justify;
+  width: 3em;
+}
+.display {
+  border: 1px solid #4E4E4E;
+  background-color: #D3D1D1;
+  text-align-last: justify;
+  padding: 0.3em 0.8em;
+}
+.outstanding {
+  background-color: rgb(253, 253, 253);
+}
+.msg{
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.msg-error{
+  color: #FD2222;
+}
+.msg-good{
+  color: #168816;
+}
+.msg-warning{
+  color: rgb(255, 178, 10);
+}

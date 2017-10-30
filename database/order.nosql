@@ -1,0 +1,2 @@
+{"id":"20171010144658327","ticket":1,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6},{"id":47,"classId":12,"name":"prawn cracker","price":3}],"discount":0,"paid":0,"printed":true}
+{"ticket":1,"productList":[{"id":38,"classId":12,"name":"Vegetable Spring rolls(6 Pieces)","price":4.8},{"id":42,"classId":12,"name":"prawn fritters","price":6.9}],"subtotal":11.7,"discount":0,"total":11.7,"paid":"20.00","printed":true}

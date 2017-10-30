@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>POS</title>
+    <link rel="stylesheet" href="./style/font-awesome.min.css" />
+    <link rel="stylesheet" href="./style/fundation.css" />
+    <link rel="stylesheet" href="./style/pos.css" />
+    
+    <script src="./js/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+  </head>
+  <body>
+    <div id="pos" class="container row">
+      <div id="left" class="col-fix">
+        <!-- Order list -->
+        <div id="unresolved_orders">
+          <ul class="menu">
+            <li v-for="order in orders" :key="order.id">
+              <button v-on:click="curOrder = order">{{order.ticket}}</button>
+            </li>
+            <li><button v-on:click="newOrder">New</button></li>
+          </ul>
+          
+        </div>
+        <!-- Current order -->
+        <div>
+          <label>Order #</label>
+          <span>{{curOrder.ticket}}</span>
+        </div>
+        <!-- Dish list -->
+        <ul id="dish_list" class="list">
+          <li v-for="(p,index) in curOrder.productList" :key="p.id">
+            <div class="row list-item">
+              <div class="col-dyn">{{p.name}}</div>
+              <div class="col-fix"><i class="fa fa-times-thin"></i> 1</div>
+              <div class="col-fix">$ {{p.price.toFixed(2)}}</div>
+              <div class="col-fix" v-on:click="removeProduct(index)"><button><i class="fa fa-times"></i></button></div>
+            </div>
+          </li>
+        </ul>
+        <div>
+          <div class="right">
+            <div>
+              <label>Total:</label>
+              <span id="total_price">{{curOrderTotal.toFixed(2)}}</span>
+            </div>
+            <div id="global_discount">
+              <label>Discount</label>
+              <input id="discount_rate" type="number" min="0" max="100" step="5" v-model="curOrder.discount"/>
+            </div>
+            <div>
+              <label>Payable:</label>
+              <span id="payable_price">{{curOrderPayable.toFixed(2)}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-half display">
+            <label>Paid:</label>
+            <span id="paid">{{curOrder.paid.toString()}}</span>
+          </div>
+          <div class="col-dyn display outstanding">
+            <label>Change:</label>
+            <span id="change" v-bind:class="cssChange" class="msg" >{{curOrderChange.toFixed(2)}}</span>
+          </div>
+        </div>
+        <!-- Keybord -->
+        <div class="keybord">
+          <div>
+            <div class="cmd_pay row">
+              <div title="Clear amount of paid."><button v-on:click="paidClear">Clear</button></div>
+              <div title="Pay by EFT. Paid = payable"><button v-on:click="paidEFT">EFT</button></div>
+              <div title="del last char of paid."><button v-on:click="paidBack"><i class="fa fa-long-arrow-left"></i></button></div>
+              <div>
+                  <button v-on:click="printOrder">
+                    <span v-if="!curOrder.printed">Save and Print</span>
+                    <span v-else>Re-print</span>
+                  </button>
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="integral">
+              <div v-for="num in [10,20,50,100]"><button v-on:click="paidIntegral(num)">+{{num}}</button></div>
+            </div>
+            <div class="num-pad">
+              <div v-for="num in [7,8,9,4,5,6,1,2,3,0]"><button v-on:click="paidInput(num)">{{num}}</button></div>
+              <div><button v-on:click="paidInput('.')">.</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="right" class="col-dyn">
+        <div class="col-dyn">
+          <ul class="menu">
+            <li v-for="c in filtSecClass" :key="c.id">
+              <button v-on:click="curSecClass = c">{{c.name}}</button>
+            </li>
+          </ul>
+          <ul class="product-list">
+            <li v-for="p in filtProduct" :key="p.id">
+              <button v-on:click="addProduct(p)">
+                <h4>{{p.name}}</h4>
+                <p>
+                  <span>$ {{p.price.toFixed(2)}}</span>
+                </p>
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="col-fix">
+          <ul class="side-menu">
+            <li v-for="c in topClass" :key="c.id" ><button v-on:click="curTopClass = c">{{c.name}}</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script src="./pos.js"></script>
+  </body>
+</html>
