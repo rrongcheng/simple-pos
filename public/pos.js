@@ -1,13 +1,5 @@
 
-function Order(newId,ticket){
-  this.id = newId;
-  this.ticket = ticket
-  this.productList = [];
-  this.discount=0;
-  this.paid = 0;
-  //Todo: Once the order is printed, it can NOT be updated.
-  this.printed = false; 
-}
+import Order from './Model/Order.js'
 
 
 var defaultOrder = new Order();
@@ -81,9 +73,17 @@ var vm = new Vue({
         alert("Error! Invaild Order type, no product list found for current order! ");
         return;
       }
+      if(this.curOrder.printed){
+        alert("Error! The current order is not changeable as it's printed. Please create another one.");
+        return;
+      }
       this.curOrder.productList.push(product);
     },
     removeProduct : function(index){
+      if(this.curOrder.printed){
+        alert("Error! The current order is not changeable as it's printed. Please create another one.");
+        return;
+      }
       if(this.curOrder.productList){
         this.curOrder.productList.splice(index,1);
       }
