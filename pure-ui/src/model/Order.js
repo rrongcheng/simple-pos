@@ -1,4 +1,4 @@
-export default function Order(newId,ticket){
+export default function Order (newId, ticket){
     this.id = newId;
     this.ticket = ticket
     this.productList = [];

@@ -27,21 +27,21 @@
 
       <q-list no-border link inset-delimiter>
         <q-list-header>Essential Links</q-list-header>
-        <q-item @click="launch('http://quasar-framework.org')">
+        <q-item to="/pos">
           <q-item-side icon="school" />
-          <q-item-main label="Docs" sublabel="quasar-framework.org" />
+          <q-item-main label="Pos" sublabel="main pos" />
         </q-item>
-        <q-item @click="launch('http://forum.quasar-framework.org')">
+        <q-item to="/printers">
           <q-item-side icon="record_voice_over" />
-          <q-item-main label="Forum" sublabel="forum.quasar-framework.org" />
+          <q-item-main label="Printers" sublabel="list avaible printers " />
         </q-item>
-        <q-item @click="launch('https://gitter.im/quasarframework/Lobby')">
+        <q-item to="/order">
           <q-item-side icon="chat" />
-          <q-item-main label="Gitter Channel" sublabel="Quasar Lobby" />
+          <q-item-main label="Orders" sublabel="List orders" />
         </q-item>
-        <q-item @click="launch('https://twitter.com/quasarframework')">
+        <q-item to="/cashcounter">
           <q-item-side icon="rss feed" />
-          <q-item-main label="Twitter" sublabel="@quasarframework" />
+          <q-item-main label="Cash Counter" sublabel="Help you to count cash" />
         </q-item>
       </q-list>
     </div>
@@ -51,11 +51,7 @@
       <router-view /> component
       if using subRoutes
     -->
-    <div class="layout-padding logo-container non-selectable no-pointer-events">
-      <div class="logo" :style="position">
-        <img src="~assets/quasar-logo-full.svg">
-      </div>
-    </div>
+    <router-view />
   </q-layout>
 </template>
 
