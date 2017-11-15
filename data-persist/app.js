@@ -49,6 +49,16 @@ app.get('/api/product/',function(req,res){
   });
 });
 
+/**
+ * Once Order is created, it should not be updated.
+ * If order is not exists, insert
+ * if exists, return existing message.
+ */
+app.post('/api/order/', function(req,res){
+  console.log(req.body);
+  res.json({"error":null,"data":{}})
+});
+
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')

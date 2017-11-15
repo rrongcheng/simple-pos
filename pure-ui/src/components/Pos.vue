@@ -1,121 +1,178 @@
 <template>
-  <!-- if you want automatic padding use "layout-padding" class -->
-  <div>
-    <!-- your content -->
-    <div class="row">
-      <div class="col-3">
+  <!-- Configure "view" prop for QLayout -->
+  <q-layout ref="layout" view="LHr LpR Fff" :right-breakpoint="0" :left-breakpoint="500">
+    <q-toolbar slot="header">
+      <q-btn flat @click="$refs.layout.toggleLeft()">
+        <q-icon name="menu" />
+      </q-btn>
+      <q-toolbar-title>
+        Title
+      </q-toolbar-title>
+    </q-toolbar>
+
+    <!-- Navigation Tabs -->
+    <q-tabs slot="navigation">
+      <q-tab slot="title" 
+        v-for="c in filtSecClass" :key="c.id"
+        :label="c.name" 
+        @click="curSecClass = c" 
+      />
+    </q-tabs>
+
+
+    <!-- Left Side Panel-->
+    <div slot="left">
+      <div >
         <!-- Order list -->
+        <q-btn v-on:click="newOrder" color="deep-orange" glossy   class="full-width" >New</q-btn>
         <div id="unresolved_orders">
-          <div class="menu">
+          <div class="row">
             <div v-for="order in orders" :key="order.id">
               <q-btn v-on:click="curOrder = order">{{order.ticket}}</q-btn>
             </div>
-            <div><q-btn v-on:click="newOrder">New</q-btn></div>
           </div>
-          
         </div>
         <!-- Current order -->
-        <div>
-          <label>Order #</label>
-          <span>{{curOrder.ticket}}</span>
-        </div>
-        <!-- Dish list -->
-        <div id="dish_list" class="list">
-          <div v-for="(p,index) in curOrder.productList" :key="p.id">
-            <div class="row list-item">
-              <div class="col-dyn">{{p.name}}</div>
-              <div class="col-fix"><i class="fa fa-times-thin"></i> 1</div>
-              <div class="col-fix">$ {{p.price.toFixed(2)}}</div>
-              <div class="col-fix" v-on:click="removeProduct(index)"><q-btn><i class="fa fa-times"></i></q-btn></div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="right">
-            <div>
-              <label>Total:</label>
-              <span id="total_price">{{curOrderTotal.toFixed(2)}}</span>
-            </div>
-            <div id="global_discount">
-              <label>Discount</label>
-              <input id="discount_rate" type="number" min="0" max="100" step="5" v-model="curOrder.discount"/>
-            </div>
-            <div>
-              <label>Payable:</label>
-              <span id="payable_price">{{curOrderPayable.toFixed(2)}}</span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-half display">
-            <label>Paid:</label>
-            <span id="paid">{{curOrder.paid.toString()}}</span>
-          </div>
-          <div class="col-dyn display outstanding">
-            <label>Change:</label>
-            <span id="change" v-bind:class="cssChange" class="msg" >{{curOrderChange.toFixed(2)}}</span>
-          </div>
-        </div>
-        <!-- Keybord -->
-        <div class="keybord">
-          <div>
-            <div class="cmd_pay row">
-              <div title="Clear amount of paid."><q-btn v-on:click="paidClear">Clear</q-btn></div>
-              <div title="Pay by EFT. Paid = payable"><q-btn v-on:click="paidEFT">EFT</q-btn></div>
-              <div title="del last char of paid."><q-btn v-on:click="paidBack"><i class="fa fa-long-arrow-left"></i></q-btn></div>
-              <div>
-                  <q-btn v-on:click="printOrder">
-                    <span v-if="!curOrder.printed">Save and Print</span>
-                    <span v-else>Re-print</span>
-                  </q-btn>
+        <div style="padding:10px;">
+          <p class="caption">Current order: # {{curOrder.ticket}}</p>
+          <!-- Dish list -->
+          <q-scroll-area style="width: 100%; height: 370px; max-height: 30vh;" class="bg-grey-3 round-borders shadow-2">
+            <table class="q-table horizontal-separator striped compact full-width" >
+              <thead>
+                <tr>
+                  <th class="text-left">Name</th>
+                  <th class="text-right">Qty.</th>
+                  <th class="text-right">Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(p,index) in curOrder.productList" :key="p.id">
+                  <td data-th="Name" class="text-left">{{p.name}}</td>
+                  <td data-th="Price" class="text-right">1</td>
+                  <td data-th="In Stock" class="text-right">{{p.price.toFixed(2)}}</td>
+                  <td><q-btn round flat small v-on:click="removeProduct(index)" icon="clear" ></q-btn></td>
+                </tr>
+              </tbody>
+            </table>
+          </q-scroll-area>
+          <div class="xs-gutter" style="padding-top:10px;" >
+            <div class="row  xs-gutter">
+              <div class="col-5">
+                <q-btn v-on:click="saveOrder">
+                  <span v-if="!curOrder.printed">Save and Print</span>
+                  <span v-else>Re-print</span>
+                </q-btn>
+              </div>
+              <div class="col-7 text-right">
+                <div>
+                  <label>Total:</label>
+                  <span id="total_price">{{curOrderTotal.toFixed(2)}}</span>
                 </div>
+                <div id="global_discount" class=" row justify-between">
+                  <label>Discount ({{curOrder.discount}}%):</label>
+                  {{curOrderDiscournt.toFixed(2)}}
+                </div>
+                <div>
+                  <label>Payable:</label>
+                  <span id="payable_price">{{curOrderPayable.toFixed(2)}}</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="integral">
-              <div v-for="num in [10,20,50,100]"><q-btn v-on:click="paidIntegral(num)">+{{num}}</q-btn></div>
+            <div class="row">
+              <div class="col-6 bg-info" >
+                <label>Paid:</label>
+                <span id="paid">{{curOrder.paid.toString()}}</span>
+              </div>
+              <div class="col-6 bg-warning">
+                <label>Change:</label>
+                <span id="change" v-bind:class="cssChange" class="msg" >{{curOrderChange.toFixed(2)}}</span>
+              </div>
             </div>
-            <div class="num-pad">
-              <div v-for="num in [7,8,9,4,5,6,1,2,3,0]"><q-btn v-on:click="paidInput(num)">{{num}}</q-btn></div>
-              <div><q-btn v-on:click="paidInput('.')">.</q-btn></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-8">
-        <div class="row inline">
-          <div class="col" v-for="c in filtSecClass" :key="c.id">
-            <q-btn v-on:click="curSecClass = c">{{c.name}}</q-btn>
-          </div>
-        </div>
-        <q-list highlight>
-          <q-item v-for="p in filtProduct" :key="p.id" v-on:click="addProduct(p)">
-            <q-item-side avatar="/statics/boy-avatar.png" />
-            <q-item-main label>{{p.name}}
+
+            <!-- Keybord -->
               
-            </q-item-main>
-            <q-item-side right>$ {{p.price.toFixed(2)}}
+              <div class="row xs-gutter">
+                <div class="col-3">
+                  <div v-for="num in [10,20,50,100]" :key="num"><q-btn class="full-width" v-on:click="paidIntegral(num)" color="green">+{{num}}</q-btn></div>
+                </div>
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-4" v-for="num in [7,8,9,4,5,6,1,2,3,0]" :key="num"><q-btn class="full-width" v-on:click="paidInput(num)">{{num}}</q-btn></div>
+                    <div class="col-8"><q-btn v-on:click="paidInput('.')">.</q-btn></div>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="row">
+                    <q-btn icon="keyboard_backspace" class="full-width" v-on:click="paidBack" title="del last char of paid."></q-btn>
+                    <q-btn v-on:click="paidClear" class="full-width"  title="Clear amount of paid.">Clear</q-btn>
+                    <q-btn v-on:click="paidEFT" class="full-width"  title="Pay by EFT. Paid = payable">EFT</q-btn>
+                    <q-btn v-on:click="setDiscount" class="full-width"  title="Set Discount">Disc</q-btn>
+                  </div>
+                </div>
+              </div>
+            <!-- End of Keybord -->
               
-            </q-item-side>
-          </q-item>
-        </q-list>
-       
-      </div>
-      <div class="col-1">
-        <div class="side-menu">
-          <div v-for="c in topClass" :key="c.id" ><q-btn v-on:click="curTopClass = c">{{c.name}}</q-btn></div>
+          </div>
+
         </div>
       </div>
     </div>
-  </div>
+    
+
+    <!-- Right Side Panel-->
+    <div slot="right">
+      <q-list link separator>
+        <q-list-header><q-icon name="keyboard_arrow_down" size="2rem" color="primary" /></q-list-header>
+        <q-item 
+          v-for="c in topClass" :key="c.id" 
+          v-on:click="curTopClass = c"
+          label
+        >
+          {{c.name}}
+        </q-item>
+      </q-list>
+    </div>
+    
+    <!-- Content -->
+    <div>
+      <q-list link highlight separator>
+        <q-item v-for="p in filtProduct" :key="p.id" v-on:click="addProduct(p)">
+          <q-item-side  />
+          <q-item-main label>{{p.name}}
+            
+          </q-item-main>
+          <q-item-side right>$ {{p.price.toFixed(2)}}
+            
+          </q-item-side>
+        </q-item>
+      </q-list>
+    </div>
+
+    <!-- Footer
+    <q-toolbar slot="footer">
+      ...
+    </q-toolbar>
+    -->
+  </q-layout>
 </template>
 
 <script>
 import Order from '../model/Order.js'
 import MyOrder from './Order'
 import {
+  Dialog,
+  QLayout,
+  QScrollArea,
+  QIcon,
+  QToolbar,
+  QToolbarTitle,
+  QSideLink,
   Loading,
   QSpinnerGears,
+  QTab,
+  QTabs,
+  QTabPane,
   QBtn,
   QList,
   QListHeader,
@@ -130,7 +187,16 @@ import {
 
 export default {
   components:{
+    QLayout,
+    QScrollArea,
+    QIcon,
+    QToolbar,
+    QToolbarTitle,
+    QSideLink,
     QSpinnerGears,
+    QTab,
+    QTabs,
+    QTabPane,
     QBtn,
     QList,
     QListHeader,
@@ -187,10 +253,13 @@ export default {
       },0);
     },
     curOrderPayable: function(){
-      return this.curOrderTotal * (1-this.curOrder.discount/100);
+      return this.curOrderTotal - this.curOrderDiscournt;
     },
     curOrderChange: function(){
       return this.curOrder.paid - this.curOrderPayable;
+    },
+    curOrderDiscournt: function(){
+      return this.curOrderTotal * this.curOrder.discount/100;
     },
     cssChange: function(){
       if (this.curOrderChange < 0 ){ return 'msg-error';} 
@@ -241,18 +310,36 @@ export default {
       }
       return this.ticketCounter++;
     },
-    printOrder: function(){
-      //todo save  print order, 
-      this.$http.post('/api/printer_order/',{
-        "id" : this.curOrder.newId,
-        "ticket" : this.curOrder.ticket,
+    getFullCurOrder: function(){
+      return {
+        "id"          : this.curOrder.id,
+        "ticket"      : this.curOrder.ticket,
         "productList" : this.curOrder.productList,
-        "subtotal" : this.curOrderTotal,
-        "discount" : this.curOrder.discount,
-        "total" : this.curOrderPayable,
-        "paid" : this.curOrder.paid,
-        "change" : this.curOrderChange
+        "discount"    : this.curOrder.discount,
+        "paid"        : this.curOrder.paid,
+
+        "subtotal"      : this.curOrderTotal,
+        "totalDiscount" : this.curOrderDiscournt,
+        "payable"       : this.curOrderPayable,
+        "change"        : this.curOrderChange,
+      }
+    },
+    saveOrder: function(){
+      /*
+        Save order, then print it.
+        If order is saved, re-print it.
+      */
+      this.$http.post('//localhost:3000/api/order/',this.getFullCurOrder())
+      .then(response =>{
+        this.showError('ok');
+      }, error=>{
+        this.showError(error);
       })
+    },
+    printOrder: function(){
+      
+      //todo save  print order, 
+      this.$http.post('/api/printer_order/',this.getFullCurOrder())
       .then(response => {
         if(response.error){
           this.showError(response.error);
@@ -309,6 +396,34 @@ export default {
         this.showError(err)
       });
     },
+    setDiscount: function(){
+      Dialog.create({
+        title: 'Discount',
+        message: 'Set discount on whole bill',
+        form: {
+          discount: {
+            type: 'slider',
+            label: 'Discount %',
+            model: 10,
+            min: 5,
+            max: 10,
+            step: 5,
+            snap: true,
+            markers: true,
+            withLabel: true
+          }
+        },
+        buttons: [
+          'Cancel',
+          {
+            label: 'OK',
+            handler: (data)=> {
+              this.curOrder.discount = data.discount;
+            }
+          }
+        ]
+      });
+    }
   },
   created: function(){
     this.newOrder();
@@ -320,4 +435,5 @@ export default {
 </script>
 
 <style>
+
 </style>

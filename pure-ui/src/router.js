@@ -28,14 +28,13 @@ export default new VueRouter({
     { path: '/', 
       component: load('Main'),
       children: [
-        { path: '/pos', component: load('Pos') },
         { path: '/printers', component: load('Printers') },
         { path: '/order', component: load('Orders') },
-        { path: '/cashcounter', component: load('Cashcounter') },
-        { path: '*', redirect: '/pos'}
+        { path: '/cashcounter', component: load('Cashcounter') }
       ]
     },
     
+    { path: '/pos', component: load('Pos') },
 
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
