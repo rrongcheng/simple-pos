@@ -34,7 +34,7 @@
         </div>
         <!-- Current order -->
         <div style="padding:10px;">
-          <p class="caption">Current order: # {{curOrder.ticket}}</p>
+          <p class="caption">Current order: # {{curOrder.ticket}} </p>
           <!-- Dish list -->
           <q-scroll-area style="width: 100%; height: 370px; max-height: 30vh;" class="bg-grey-3 round-borders shadow-2">
             <table class="q-table horizontal-separator striped compact full-width" >
@@ -51,20 +51,17 @@
                   <td data-th="Name" class="text-left">{{p.name}}</td>
                   <td data-th="Price" class="text-right">1</td>
                   <td data-th="In Stock" class="text-right">{{p.price.toFixed(2)}}</td>
-                  <td><q-btn round flat small v-on:click="removeProduct(index)" icon="clear" ></q-btn></td>
+                  <td>
+                    <q-btn v-show="curOrder.editable" round flat small v-on:click="removeProduct(index)" icon="clear" ></q-btn>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </q-scroll-area>
           <div class="xs-gutter" style="padding-top:10px;" >
-            <div class="row  xs-gutter">
-              <div class="col-5">
-                <q-btn v-on:click="saveOrder">
-                  <span v-if="!curOrder.printed">Save and Print</span>
-                  <span v-else>Re-print</span>
-                </q-btn>
-              </div>
-              <div class="col-7 text-right">
+            <div class="row xs-gutter">
+              
+              <div class="col-12 text-right">
                 <div>
                   <label>Total:</label>
                   <span id="total_price">{{curOrderTotal.toFixed(2)}}</span>
@@ -89,35 +86,61 @@
                 <span id="change" v-bind:class="cssChange" class="msg" >{{curOrderChange.toFixed(2)}}</span>
               </div>
             </div>
-
-            <!-- Keybord -->
-              
-              <div class="row xs-gutter">
-                <div class="col-3">
-                  <div v-for="num in [10,20,50,100]" :key="num"><q-btn class="full-width" v-on:click="paidIntegral(num)" color="green">+{{num}}</q-btn></div>
-                </div>
-                <div class="col-6">
-                  <div class="row">
-                    <div class="col-4" v-for="num in [7,8,9,4,5,6,1,2,3,0]" :key="num"><q-btn class="full-width" v-on:click="paidInput(num)">{{num}}</q-btn></div>
-                    <div class="col-8"><q-btn v-on:click="paidInput('.')">.</q-btn></div>
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="row">
-                    <q-btn icon="keyboard_backspace" class="full-width" v-on:click="paidBack" title="del last char of paid."></q-btn>
-                    <q-btn v-on:click="paidClear" class="full-width"  title="Clear amount of paid.">Clear</q-btn>
-                    <q-btn v-on:click="paidEFT" class="full-width"  title="Pay by EFT. Paid = payable">EFT</q-btn>
-                    <q-btn v-on:click="setDiscount" class="full-width"  title="Set Discount">Disc</q-btn>
-                  </div>
-                </div>
+            <div class="row xs-gutter">
+              <div class="col-12">
+                <q-btn v-on:click="printOrder(PrintStage.kitchen)" class="full-width" icon="print">Kitchen Bill</q-btn>
               </div>
-            <!-- End of Keybord -->
-              
+              <div class="col-12" v-show="curOrder.editable">
+                <q-btn v-on:click="setDiscount" class="full-width"  title="Set Discount">Discount</q-btn>
+              </div>
+              <div class="col-6" v-show="curOrder.editable">
+                <q-btn @click="$refs.keyboardModal.open()" class="full-width">Cash</q-btn>
+              </div>
+              <div class="col-6" v-show="curOrder.editable">
+                <q-btn v-on:click="paidEFT" class="full-width"  title="Pay by EFT. Paid = payable">EFT</q-btn>
+              </div>
+              <div class="col-12">
+                <q-btn v-on:click="printOrder('receipt')" class="full-width"  title="Set Discount" icon="print">Print Receipt & Close</q-btn>
+              </div>
+            </div>
           </div>
-
         </div>
       </div>
     </div>
+    <q-modal ref="keyboardModal" :content-css="{padding: '20px'}">
+      <div class="xs-gutter">
+        <div class="row" >
+          <div class="col-6 bg-info" style="padding:10px;">
+            <label>Paid:</label>
+            <span id="paid">{{curOrder.paid.toString()}}</span>
+          </div>
+          <div class="col-6">
+            <div class="row justify-end">
+              <q-btn @click="$refs.keyboardModal.close()" outline color="primary">Done</q-btn>
+            </div>
+          </div>
+        </div>
+        <!-- Keybord -->
+        <div class="row xs-gutter">
+          <div class="col-3">
+            <div v-for="num in [10,20,50,100]" :key="num"><q-btn class="full-width" v-on:click="paidIntegral(num)" color="green">+{{num}}</q-btn></div>
+          </div>
+          <div class="col-6">
+            <div class="row">
+              <div class="col-4" v-for="num in [7,8,9,4,5,6,1,2,3,0]" :key="num"><q-btn class="full-width" v-on:click="paidInput(num)">{{num}}</q-btn></div>
+              <div class="col-8"><q-btn class="full-width" v-on:click="paidInput('.')">.</q-btn></div>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="row">
+              <q-btn icon="keyboard_backspace" class="full-width" v-on:click="paidBack" title="del last char of paid."></q-btn>
+              <q-btn v-on:click="paidClear" class="full-width"  title="Clear amount of paid.">Clear</q-btn>
+            </div>
+          </div>
+        </div>
+        <!-- End of Keybord -->
+      </div>
+    </q-modal>
     
 
     <!-- Right Side Panel-->
@@ -135,18 +158,17 @@
     </div>
     
     <!-- Content -->
-    <div>
+    <div v-show="curOrder.editable">
       <q-list link highlight separator>
         <q-item v-for="p in filtProduct" :key="p.id" v-on:click="addProduct(p)">
           <q-item-side  />
-          <q-item-main label>{{p.name}}
-            
-          </q-item-main>
-          <q-item-side right>$ {{p.price.toFixed(2)}}
-            
-          </q-item-side>
+          <q-item-main label>{{p.name}}</q-item-main>
+          <q-item-side right>$ {{p.price.toFixed(2)}}</q-item-side>
         </q-item>
       </q-list>
+    </div>
+    <div v-show="!curOrder.editable" class="row items-end justify-center " style="height:50vh">
+      <div class="column "><h1>Order is not editale</h1></div>
     </div>
 
     <!-- Footer
@@ -162,7 +184,9 @@ import Order from '../model/Order.js'
 import MyOrder from './Order'
 import {
   Dialog,
+  Toast,
   QLayout,
+  QModal,
   QScrollArea,
   QIcon,
   QToolbar,
@@ -185,9 +209,15 @@ import {
   QPopover
 } from 'quasar'
 
+const PrintStage = {
+  kitchen: "kitchen",
+  receipt: "receipt"
+}
+
 export default {
   components:{
     QLayout,
+    QModal,
     QScrollArea,
     QIcon,
     QToolbar,
@@ -217,11 +247,15 @@ export default {
       secClass: [],
       products: [],
       ticketCounter: 1, 
-      curOrder: null,
-      orders:[]
+      curOrderIndex: null,
+      orders:[],
+      PrintStage: PrintStage
     }
   },
   computed:{
+    curOrder: function(){
+      return this.orders[this.curOrderIndex];
+    },
     cCurTopClass : function(){
       return this.curTopClass || this.topClass[0];
     },
@@ -269,11 +303,24 @@ export default {
     }
   },
   methods: {
-    showError: function(msg){
-      alert(msg);
+    showError: function(msg,title){
+      Dialog.create({
+        title: title || "Error",
+        message:msg
+      });
+    },
+    showMsg: function(msg,title){
+      Dialog.create({
+        title: title,
+        message:msg
+      });
     },
     addProduct: function(product){
       if (!this.curOrder){
+        Toast.create({
+          html: 'Message to display',
+          bgcolor: 'negative'
+        });
         alert("No current order! Please create a new order by click New button on top right corner");
         return;
       }
@@ -281,15 +328,15 @@ export default {
         alert("Error! Invaild Order type, no product list found for current order! ");
         return;
       }
-      if(this.curOrder.printed){
-        alert("Error! The current order is not changeable as it's printed. Please create another one.");
+      if(!this.curOrder.editable){
+        alert("Error! The current order is not changeable as it's saved. Please create another one.");
         return;
       }
       this.curOrder.productList.push(product);
     },
     removeProduct : function(index){
-      if(this.curOrder.printed){
-        alert("Error! The current order is not changeable as it's printed. Please create another one.");
+      if(!this.curOrder.editable){
+        alert("Error! The current order is not changeable as it's saved. Please create another one.");
         return;
       }
       if(this.curOrder.productList){
@@ -298,7 +345,13 @@ export default {
     },
     newOrder: function(){
       this.orders.push(new Order(this.getNowAsId(),this.getNextTicket()));
-      this.curOrder = this.orders[this.orders.length - 1];
+      this.curOrderIndex = this.orders.length - 1;
+    },
+    closeCurOrder: function(){
+      this.orders.$remove(this.curOrderIndex);
+      if (this.orders.length < 1){
+        this.newOrder();
+      }
     },
     getNowAsId: function () {
       var now = new Date();
@@ -314,7 +367,7 @@ export default {
       return {
         "id"          : this.curOrder.id,
         "ticket"      : this.curOrder.ticket,
-        "productList" : this.curOrder.productList,
+        "editable"    : this.curOrder.editable,
         "discount"    : this.curOrder.discount,
         "paid"        : this.curOrder.paid,
 
@@ -322,34 +375,61 @@ export default {
         "totalDiscount" : this.curOrderDiscournt,
         "payable"       : this.curOrderPayable,
         "change"        : this.curOrderChange,
+        "productList" : this.curOrder.productList,
       }
     },
-    saveOrder: function(){
-      /*
-        Save order, then print it.
-        If order is saved, re-print it.
-      */
+    printReceiptAndClose: function(){
+      
+    },
+    printOrder: function(stage){
+      // order is not editable after print receipt regardless if printing success
+      if (stage == PrintStage.receipt){
+        this.curOrder.editable = false;
+      }
+      // save order
       this.$http.post('//localhost:3000/api/order/',this.getFullCurOrder())
       .then(response =>{
-        this.showError('ok');
-      }, error=>{
-        this.showError(error);
-      })
-    },
-    printOrder: function(){
-      
-      //todo save  print order, 
-      this.$http.post('/api/printer_order/',this.getFullCurOrder())
-      .then(response => {
-        if(response.error){
-          this.showError(response.error);
-          return;
+        if (response.data.error){
+          this.showError(response.data.error);
+        }else{
+          // done save, print the order
+          Toast.create['positive']("Current order saved");
+          
+          //print order, 
+          this.$http.post('//localhost:4000/api/printer_order/',{id:this.curOrder.id, templet:stage})
+          .then(response => {
+            if(response.data.error){
+              Toast.create['negative']({
+                html: "Printing failed",
+                button: {
+                  label: "See Detail",
+                  handler: ()=>{
+                    Dialog.create({
+                      title: "Printing failed as following response.error ",
+                      message:response.error
+                    });
+                  }
+                }
+              });
+              return;
+            }
+            // if success
+            Toast.create['positive']("Current order is printed.");
+          }, error=>{
+            //alert(error);
+            Dialog.create({
+              title: "HTTP Error on requesting print order ",
+              message: error.toString()
+            });
+          })
         }
-        // if success
-        //this.curOrder.printed = true;
       }, error=>{
-        this.showError(error);
+        Dialog.create({
+          title: "HTTP Error on requesting save order ",
+          message: error.toString()
+        });
       })
+      
       
     },
     paidClear: function(){
@@ -360,7 +440,7 @@ export default {
       this.curOrder.paid = this.curOrderPayable;
     },
     paidIntegral: function(num){
-      this.curOrder.paid = "" + (parseFloat(this.curOrder.paid) + num).toFixed(2);
+      this.curOrder.paid = "" + (parseFloat(this.curOrder.paid) + num);
     },
     paidInput: function(num){
       var strPaid = this.curOrder.paid.toString().replace(/^0+/,'');

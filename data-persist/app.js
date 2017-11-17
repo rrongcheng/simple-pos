@@ -50,15 +50,57 @@ app.get('/api/product/',function(req,res){
 });
 
 /**
- * Once Order is created, it should not be updated.
+ * Once Order is not , it should not be updated.
  * If order is not exists, insert
  * if exists, return existing message.
  */
 app.post('/api/order/', function(req,res){
-  console.log(req.body);
-  res.json({"error":null,"data":{}})
-});
+  dbOrder.find().make(function(builder) {
+    builder.where('id', req.body.id);
+    builder.callback(function(err, response) {
+      if (err){
+        return res.json({"error":err,"data":{}});
+      }
+      // New order not exists
+      if (response.length === 0){ 
+        dbOrder.insert(req.body).callback(function(err) {
+          if (err){
+            return res.json({"error":err,"data":{}});
+          }
+          return res.json({"error":null,"data":{}});
+        });
+      }
 
+      // Found 1 record
+      if (response.length === 1  ){
+        // Still editable
+        if (response[0].editable){
+          dbOrder
+          .update(req.body)
+          .where('id',req.body.id)
+          .callback(function(err,count){
+            if (err){
+              return res.json({"error":err,"data":{}});
+            }
+            if (count == 0){
+              return res.json({"error": "Order is not saved.","data":{}});
+            }
+            if (count == 1){
+              // order saved.
+              return res.json({"error":null,"data":count});
+            }else{
+              // unexpect result
+              return res.json({"error":"unexpect result","data":{}});
+            }
+          });
+        }else{
+          console.log("This order is not editable anymore.")
+          return res.json({"error":"This order is not editable anymore.","data":{}});
+        }
+      }
+    });
+  });
+});
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
