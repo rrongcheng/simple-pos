@@ -48,6 +48,32 @@ app.get('/api/product/',function(req,res){
     });
   });
 });
+app.get('/api/order/:id',function(req,res){
+  //console.log('id is '+ req.params.id),
+  //console.log('?id is '+ req.query.id),
+  let requestOrderId = req.params.id;
+  
+  dbOrder.find().make(function(builder) {
+    builder.where('id', requestOrderId);
+    builder.callback(function(err, response) {
+      if (err){
+        return res.json({"error":err,"data":{}});
+      }
+      // New order not exists
+      if (response.length === 0){ 
+        return res.json({"error": "No order found with id = " + requestOrderId,"data":{}});
+      }
+
+      // Found 1 record
+      if (response.length === 1  ){
+        // Still editable
+        return res.json({"error": "No order found with id = " + requestOrderId,"data":response[0]});
+      }
+
+      return res.json({"error": "More than One order found with id = " + requestOrderId,"data":{}});
+    });
+  });
+})
 
 /**
  * Once Order is not , it should not be updated.

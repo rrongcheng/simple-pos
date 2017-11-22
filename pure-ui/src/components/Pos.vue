@@ -34,7 +34,9 @@
         </div>
         <!-- Current order -->
         <div style="padding:10px;">
-          <p class="caption">Current order: # {{curOrder.ticket}} </p>
+          <p class="caption">Current order: # {{curOrder.ticket}} 
+                <q-btn v-show="!curOrder.editable" v-on:click="closeNoPrint()" class="full-width"  title="Set Discount" icon="exit_to_app" color="negative">Close without Printing</q-btn>
+          </p>
           <!-- Dish list -->
           <q-scroll-area style="width: 100%; height: 370px; max-height: 30vh;" class="bg-grey-3 round-borders shadow-2">
             <table class="q-table horizontal-separator striped compact full-width" >
@@ -99,8 +101,8 @@
               <div class="col-6" v-show="curOrder.editable">
                 <q-btn v-on:click="paidEFT" class="full-width"  title="Pay by EFT. Paid = payable">EFT</q-btn>
               </div>
-              <div class="col-12">
-                <q-btn v-on:click="printOrder('receipt')" class="full-width"  title="Set Discount" icon="print">Print Receipt & Close</q-btn>
+              <div class="col-12" v-show="curOrderVaild">
+                <q-btn v-on:click="printReceiptAndClose()" class="full-width"  title="Set Discount" icon="print">Print Receipt & Close</q-btn>
               </div>
             </div>
           </div>
@@ -183,6 +185,7 @@
 import Order from '../model/Order.js'
 import MyOrder from './Order'
 import {
+  Alert,
   Dialog,
   Toast,
   QLayout,
@@ -295,6 +298,15 @@ export default {
     curOrderDiscournt: function(){
       return this.curOrderTotal * this.curOrder.discount/100;
     },
+    curOrderVaild: function(){
+      if (this.curOrderPayable <= 0){
+        return false;
+      }
+      if(this.curOrderChange < 0){
+        return false;
+      }
+      return true;
+    },
     cssChange: function(){
       if (this.curOrderChange < 0 ){ return 'msg-error';} 
       if (this.curOrderChange == 0 ){ return 'msg-good';} 
@@ -379,58 +391,50 @@ export default {
       }
     },
     printReceiptAndClose: function(){
-      
+      // validation
+      if (this.curOrderVaild){
+        // order is not editable after print receipt regardless if printing success
+        this.curOrder.editable = false;
+        this.printOrder(this.PrintStage.receipt)
+        .then(response => {
+          if(response){
+            // printing success, close current order
+            this.closeCurOrder();
+          }
+        });
+      }
     },
     printOrder: function(stage){
-      // order is not editable after print receipt regardless if printing success
-      if (stage == PrintStage.receipt){
-        this.curOrder.editable = false;
-      }
       // save order
-      this.$http.post('//localhost:3000/api/order/',this.getFullCurOrder())
+      return this.$http.post('//localhost:3000/api/order/',this.getFullCurOrder())
       .then(response =>{
         if (response.data.error){
-          this.showError(response.data.error);
-        }else{
-          // done save, print the order
-          Toast.create['positive']("Current order saved");
-          
-          //print order, 
-          this.$http.post('//localhost:4000/api/printer_order/',{id:this.curOrder.id, templet:stage})
-          .then(response => {
-            if(response.data.error){
-              Toast.create['negative']({
-                html: "Printing failed",
-                button: {
-                  label: "See Detail",
-                  handler: ()=>{
-                    Dialog.create({
-                      title: "Printing failed as following response.error ",
-                      message:response.error
-                    });
-                  }
-                }
-              });
-              return;
-            }
-            // if success
-            Toast.create['positive']("Current order is printed.");
-          }, error=>{
-            //alert(error);
-            Dialog.create({
-              title: "HTTP Error on requesting print order ",
-              message: error.toString()
-            });
-          })
+          throw Error(response.data.error);
         }
-      }, error=>{
-        Dialog.create({
-          title: "HTTP Error on requesting save order ",
-          message: error.toString()
+        // done save, print the order
+        Toast.create['positive']("Current order saved");
+      }).catch(error=>{
+        Toast.create['warning']("On save order: <br>" + error.toString());
+      }).then(response=>{
+        //print order, 
+        return this.$http.post('//localhost:4000/api/printer_order/',{id:this.curOrder.id, templet:stage})
+        .then(response => {
+          if(response.data.error){
+            throw Error(response.error);
+          }
+          // if success
+          Toast.create['positive']("Current order is printed.");
+          return response;
+        })
+      }).catch(error=>{
+        Alert.create({
+          //enter: "bounceInDown",
+          //leave: "bounceOutUp",
+          color: 'negative',
+          html: "Printing failed <br>" + error.toString(),
+          position: "top-center",
         });
-      })
-      
-      
+       })
     },
     paidClear: function(){
       this.curOrder.paid = "0";
