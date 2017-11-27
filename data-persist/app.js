@@ -61,13 +61,13 @@ app.get('/api/order/:id',function(req,res){
       }
       // New order not exists
       if (response.length === 0){ 
-        return res.json({"error": "No order found with id = " + requestOrderId,"data":{}});
+        return res.status(404).send("No order found with id = " + requestOrderId);
       }
 
       // Found 1 record
       if (response.length === 1  ){
         // Still editable
-        return res.json({"error": "No order found with id = " + requestOrderId,"data":response[0]});
+        return res.json({"error": null,"data":response[0]});
       }
 
       return res.json({"error": "More than One order found with id = " + requestOrderId,"data":{}});

@@ -7,6 +7,14 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
 app.get('/', function(req,res){
   res.send('Visual printer');
 });
@@ -14,19 +22,23 @@ app.get('/', function(req,res){
 app.post('/api/printer_order/',function(req,res){
   var order = req.body;
   if (!order){
-    res.json({error:'no order data received.'});
-    return;
-  }
-  console.log(order);
+    return res.status(422).send("No order data received.");
+  };
+  if (!order.id){
+    return res.status(422).send("No order id received.");
+  };
+  if (!order.templet){
+    return res.status(422).send("No print templet received.");
+  };
 
-  axios.get('//localhost:3000/api/order/'+ order.id)
+  axios.get('http://localhost:3000/api/order/'+ order.id)
   .then(response=>{
-    console.log("response");
-    res.json({});
+    // printing {id:xx, templet:xx}
+    console.log("print in templet: " + order.templet);
+    console.log(response.data);
+    res.status(200).send('Order printed.');
   }).catch(err=>{
-    console.log(err.toString());
-    //res.send('error');
-    res.json({"error": err.toString()});
+    res.status(err.response.status).json(err.response.data);
     //res.json({"error":err, "data":{}});
   });
 });

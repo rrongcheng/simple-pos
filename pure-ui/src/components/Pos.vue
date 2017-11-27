@@ -27,8 +27,8 @@
         <q-btn v-on:click="newOrder" color="deep-orange" glossy   class="full-width" >New</q-btn>
         <div id="unresolved_orders">
           <div class="row">
-            <div v-for="order in orders" :key="order.id">
-              <q-btn v-on:click="curOrder = order">{{order.ticket}}</q-btn>
+            <div v-for="(order,index) in orders" :key="order.id">
+              <q-btn v-on:click="curOrderIndex = index">{{order.ticket}}</q-btn>
             </div>
           </div>
         </div>
@@ -360,7 +360,10 @@ export default {
       this.curOrderIndex = this.orders.length - 1;
     },
     closeCurOrder: function(){
-      this.orders.$remove(this.curOrderIndex);
+      this.orders = this.orders.filter((item,index) => {
+        return index != this.curOrderIndex;
+      });
+      //this.orders.$remove(this.curOrderIndex);
       if (this.orders.length < 1){
         this.newOrder();
       }
@@ -414,7 +417,8 @@ export default {
         // done save, print the order
         Toast.create['positive']("Current order saved");
       }).catch(error=>{
-        Toast.create['warning']("On save order: <br>" + error.toString());
+        // As the printer will directly print the order in database, ingnore the failure of save order
+        //Toast.create['warning']("On save order: <br>" + error.toString());
       }).then(response=>{
         //print order, 
         return this.$http.post('//localhost:4000/api/printer_order/',{id:this.curOrder.id, templet:stage})
@@ -428,11 +432,17 @@ export default {
         })
       }).catch(error=>{
         Alert.create({
-          //enter: "bounceInDown",
-          //leave: "bounceOutUp",
           color: 'negative',
           html: "Printing failed <br>" + error.toString(),
           position: "top-center",
+          actions:[
+            {
+              label: "See Detail",
+              handler (){
+                Dialog.create({message: JSON.stringify(error)})
+              }
+            }
+          ]
         });
        })
     },
