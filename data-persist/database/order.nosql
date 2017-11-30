@@ -1,8 +1,3 @@
-{"id":"20171117085025761","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":8.8,"totalDiscount":0,"payable":8.8,"change":-8.8,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8}]}
-{"id":"20171117085244538","ticket":1,"editable":false,"discount":0,"paid":0,"subtotal":8.8,"totalDiscount":0,"payable":8.8,"change":-8.8,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8}]}
-{"id":"20171117085617269","ticket":1,"editable":false,"discount":0,"paid":0,"subtotal":14.8,"totalDiscount":0,"payable":14.8,"change":-14.8,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6}]}
-{"id":"20171117091500456","ticket":1,"editable":false,"discount":10,"paid":"50","subtotal":14.8,"totalDiscount":1.48,"payable":13.32,"change":36.68,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6}]}
-{"id":"20171117091933264","ticket":1,"editable":false,"discount":0,"paid":20.8,"subtotal":20.8,"totalDiscount":0,"payable":20.8,"change":0,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":50,"classId":12,"name":"chicken lettuce delight","price":12}]}
 {"id":"20171121074016920","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
 {"id":"20171121074623041","ticket":1,"editable":false,"discount":0,"paid":6,"subtotal":6,"totalDiscount":0,"payable":6,"change":0,"productList":[{"id":53,"classId":12,"name":"black fungus","price":6}]}
 {"id":"20171122050731542","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
@@ -10,6 +5,11 @@
 {"id":"20171122050937420","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
 {"id":"20171122051722636","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
 {"id":"20171122051935769","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171117085025761","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":8.8,"totalDiscount":0,"payable":8.8,"change":-8.8,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8}]}
+{"id":"20171117085244538","ticket":1,"editable":false,"discount":0,"paid":0,"subtotal":8.8,"totalDiscount":0,"payable":8.8,"change":-8.8,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8}]}
+{"id":"20171117085617269","ticket":1,"editable":false,"discount":0,"paid":0,"subtotal":14.8,"totalDiscount":0,"payable":14.8,"change":-14.8,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6}]}
+{"id":"20171117091500456","ticket":1,"editable":false,"discount":10,"paid":"50","subtotal":14.8,"totalDiscount":1.48,"payable":13.32,"change":36.68,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6}]}
+{"id":"20171117091933264","ticket":1,"editable":false,"discount":0,"paid":20.8,"subtotal":20.8,"totalDiscount":0,"payable":20.8,"change":0,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":50,"classId":12,"name":"chicken lettuce delight","price":12}]}
 {"id":"20171122052042939","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
 {"id":"20171122052059785","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
 {"id":"20171122052120951","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
@@ -35,3 +35,20 @@
 {"id":"20171127091646787","ticket":1,"editable":false,"discount":0,"paid":10.5,"subtotal":10.5,"totalDiscount":0,"payable":10.5,"change":0,"productList":[{"id":53,"classId":12,"name":"black fungus","price":6},{"id":45,"classId":12,"name":"chicken dim sim","price":4.5}]}
 {"id":"20171127092831754","ticket":1,"editable":false,"discount":0,"paid":14.8,"subtotal":14.8,"totalDiscount":0,"payable":14.8,"change":0,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6}]}
 {"id":"20171127092901497","ticket":3,"editable":false,"discount":0,"paid":10.5,"subtotal":10.5,"totalDiscount":0,"payable":10.5,"change":0,"productList":[{"id":53,"classId":12,"name":"black fungus","price":6},{"id":45,"classId":12,"name":"chicken dim sim","price":4.5}]}
+{"id":"20171128080028942","ticket":1,"editable":false,"discount":0,"paid":14.8,"subtotal":14.8,"totalDiscount":0,"payable":14.8,"change":0,"productList":[{"id":52,"classId":12,"name":"beef tripes","price":8.8},{"id":53,"classId":12,"name":"black fungus","price":6}]}
+{"id":"20171128080034874","ticket":2,"editable":false,"discount":0,"paid":24.6,"subtotal":24.6,"totalDiscount":0,"payable":24.6,"change":0,"productList":[{"id":50,"classId":12,"name":"chicken lettuce delight","price":12},{"id":54,"classId":12,"name":"cucumber with vinegar","price":6},{"id":40,"classId":12,"name":"fried squid ring","price":6.6}]}
+{"id":"20171128085314839","ticket":1,"editable":false,"discount":0,"paid":131.75,"subtotal":131.75,"totalDiscount":0,"payable":131.75,"change":0,"productList":[{"id":50,"classId":12,"name":"chicken lettuce delight","price":12},{"id":66,"classId":14,"name":"braised pork belly in soy sauce","price":15},{"id":64,"classId":14,"name":"honey pepper pork chop","price":13.8},{"id":143,"classId":26,"name":"combination thin egg noodle soup","price":12.95},{"id":171,"classId":28,"name":"beef tripes with bean sprout","price":14},{"id":101,"classId":19,"name":"scallop with cashew nuts","price":20},{"id":125,"classId":23,"name":"mongolian seafood","price":22},{"id":125,"classId":23,"name":"mongolian seafood","price":22}]}
+{"id":"20171129075738859","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129075822506","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080127346","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080231896","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080337658","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080426920","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080452201","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080545520","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080600440","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171129080723136","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171130065452907","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171130065543615","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":0,"totalDiscount":0,"payable":0,"change":0,"productList":[]}
+{"id":"20171130065657915","ticket":1,"editable":false,"discount":0,"paid":6,"subtotal":6,"totalDiscount":0,"payable":6,"change":0,"productList":[{"id":55,"classId":12,"name":"chinese style potato salad","price":6}]}
+{"id":"20171130071102522","ticket":1,"editable":true,"discount":0,"paid":0,"subtotal":18,"totalDiscount":0,"payable":18,"change":-18,"productList":[{"id":50,"classId":12,"name":"chicken lettuce delight","price":12},{"id":55,"classId":12,"name":"chinese style potato salad","price":6}]}

@@ -48,6 +48,17 @@ app.get('/api/product/',function(req,res){
     });
   });
 });
+app.get('/api/order',function(req,res){
+  // get order list
+  dbOrder.find().make(function(filter){
+    filter.callback(function(err,response){
+      if (err){
+        return res.status(500).send('Failed while retrieve data from database: ' + err.toString())
+      }
+      return res.json(response);
+    });
+  })
+});
 app.get('/api/order/:id',function(req,res){
   //console.log('id is '+ req.params.id),
   //console.log('?id is '+ req.query.id),

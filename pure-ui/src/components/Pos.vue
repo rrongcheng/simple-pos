@@ -6,7 +6,7 @@
         <q-icon name="menu" />
       </q-btn>
       <q-toolbar-title>
-        Title
+        Current Order: ID ({{curOrder.id}}) 
       </q-toolbar-title>
     </q-toolbar>
 
@@ -183,8 +183,10 @@
 
 <script>
 import Order from '../model/Order.js'
-import MyOrder from './Order'
+import Printer from '../model/Printer.js'
+
 import {
+  date,
   Alert,
   Dialog,
   Toast,
@@ -212,10 +214,7 @@ import {
   QPopover
 } from 'quasar'
 
-const PrintStage = {
-  kitchen: "kitchen",
-  receipt: "receipt"
-}
+const {formatDate} = date;
 
 export default {
   components:{
@@ -239,8 +238,7 @@ export default {
     QItemMain,
     QItemTile,
     QChip,
-    QPopover,
-    'my-order':MyOrder
+    QPopover
   },  
   data () {
     return {
@@ -252,7 +250,7 @@ export default {
       ticketCounter: 1, 
       curOrderIndex: null,
       orders:[],
-      PrintStage: PrintStage
+      PrintStage: Printer.PrintStage
     }
   },
   computed:{
@@ -369,8 +367,7 @@ export default {
       }
     },
     getNowAsId: function () {
-      var now = new Date();
-      return now.toISOString().replace(/[^0-9]/g, "")
+      return formatDate(Date.now(),"YYYYMMDDHHmmssSSS");
     },
     getNextTicket: function(){
       if (this.ticketCounter > 99){
@@ -421,15 +418,10 @@ export default {
         //Toast.create['warning']("On save order: <br>" + error.toString());
       }).then(response=>{
         //print order, 
-        return this.$http.post('//localhost:4000/api/printer_order/',{id:this.curOrder.id, templet:stage})
-        .then(response => {
-          if(response.data.error){
-            throw Error(response.error);
-          }
-          // if success
+        return Printer.printerOrder(this.$http,this.curOrder.id, stage)
+        .then(response=>{
           Toast.create['positive']("Current order is printed.");
-          return response;
-        })
+        });    
       }).catch(error=>{
         Alert.create({
           color: 'negative',
