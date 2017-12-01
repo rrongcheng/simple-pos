@@ -35,7 +35,7 @@
         <!-- Current order -->
         <div style="padding:10px;">
           <p class="caption">Current order: # {{curOrder.ticket}} 
-                <q-btn v-show="!curOrder.editable" v-on:click="closeNoPrint()" class="full-width"  title="Set Discount" icon="exit_to_app" color="negative">Close without Printing</q-btn>
+                <q-btn v-show="!curOrder.editable" v-on:click="closeCurOrder()" class="full-width"  title="Set Discount" icon="exit_to_app" color="negative">Close without Printing</q-btn>
           </p>
           <!-- Dish list -->
           <q-scroll-area style="width: 100%; height: 370px; max-height: 30vh;" class="bg-grey-3 round-borders shadow-2">
@@ -255,7 +255,7 @@ export default {
   },
   computed:{
     curOrder: function(){
-      return this.orders[this.curOrderIndex];
+      return this.orders[this.curOrderIndex] || Order.getEmptyOrder();
     },
     cCurTopClass : function(){
       return this.curTopClass || this.topClass[0];
@@ -354,8 +354,14 @@ export default {
       }
     },
     newOrder: function(){
-      this.orders.push(new Order(this.getNowAsId(),this.getNextTicket()));
-      this.curOrderIndex = this.orders.length - 1;
+      Order.getNewOrder(this.$http,this.getNowAsId())
+      .then(newOrder=>{
+        this.orders.push(newOrder);
+        this.curOrderIndex = this.orders.length - 1;
+      }).catch(error=>{
+        // todo retry with another id
+        console.error(error);
+      });     
     },
     closeCurOrder: function(){
       this.orders = this.orders.filter((item,index) => {
@@ -421,6 +427,7 @@ export default {
         return Printer.printerOrder(this.$http,this.curOrder.id, stage)
         .then(response=>{
           Toast.create['positive']("Current order is printed.");
+          return response;
         });    
       }).catch(error=>{
         Alert.create({

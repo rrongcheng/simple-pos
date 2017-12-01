@@ -3,13 +3,35 @@ const bodyParser = require('body-parser');
 const NoSQL = require('nosql');
 
 
-
 const app = express();
 const dbTopClass = NoSQL.load('./database/top-class.nosql');
 const dbSecClass = NoSQL.load('./database/sec-class.nosql');
 const dbProduct = NoSQL.load('./database/product.nosql');
 const dbOrder = NoSQL.load('./database/order.nosql');
 
+var ticketCount = undefined;
+(function(){
+  let today = new Date();
+  today = today.toLocaleDateString(); // this should us /model/Order.js => order.getOrderDate(). temply depulicate logic now.
+
+  dbOrder.find().make(function(builder){
+    builder.first();
+    builder.where("date",today);
+    builder.sort("ticket",true);
+    builder.callback(function(err,response){
+      if (err){
+        throw Error(err);
+      }
+      if (response){
+        ticketCount = parseInt(response[0].ticket);
+      }else{
+        //no ticket count found for today
+        ticketCount = 0;
+      }
+      console.log("Today ("+ today +") ticket count start at "+ ticketCount);
+    })
+  })
+})();
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -84,58 +106,60 @@ app.get('/api/order/:id',function(req,res){
       return res.json({"error": "More than One order found with id = " + requestOrderId,"data":{}});
     });
   });
-})
+});
+
 
 /**
- * Once Order is not , it should not be updated.
+ * Save/Create/Update order
  * If order is not exists, insert
- * if exists, return existing message.
+ * if exists, update if it's editable, throw error if not.
+ * 
+ * Validation => /model/Order.js will handle validation such as 
+ *  if status = open, then editable = true
+ *  The /model/order.js is currently in pure-ui package, but it should be in separate package, and be include by others
  */
 app.post('/api/order/', function(req,res){
-  dbOrder.find().make(function(builder) {
-    builder.where('id', req.body.id);
-    builder.callback(function(err, response) {
-      if (err){
-        return res.json({"error":err,"data":{}});
-      }
-      // New order not exists
-      if (response.length === 0){ 
-        dbOrder.insert(req.body).callback(function(err) {
-          if (err){
-            return res.json({"error":err,"data":{}});
-          }
-          return res.json({"error":null,"data":{}});
-        });
-      }
-
-      // Found 1 record
-      if (response.length === 1  ){
-        // Still editable
-        if (response[0].editable){
-          dbOrder
-          .update(req.body)
-          .where('id',req.body.id)
-          .callback(function(err,count){
-            if (err){
-              return res.json({"error":err,"data":{}});
-            }
-            if (count == 0){
-              return res.json({"error": "Order is not saved.","data":{}});
-            }
-            if (count == 1){
-              // order saved.
-              return res.json({"error":null,"data":count});
-            }else{
-              // unexpect result
-              return res.json({"error":"unexpect result","data":{}});
-            }
-          });
-        }else{
-          console.log("This order is not editable anymore.")
-          return res.json({"error":"This order is not editable anymore.","data":{}});
+  let order = req.body;
+  //get ticket 
+  if (order.ticket == undefined || order.ticket == 0){
+    if (ticketCount == undefined){
+      return res.status(500).send('Server not get ready. no ticketCount not loaded.');
+    }
+    order.ticket = ++ticketCount;
+  }
+  // start save
+  dbOrder.insert(order,true).where("id",order.id)
+  .callback(function(err,rows) {
+    if (err){
+      return res.status(500).send('Database error while retrieve order by id ('+ order.id +') ' + err.toString())
+    }
+    if(rows == 1){
+      // new order saved, return the order
+      return res.status(200).json(order);
+    }
+    if (rows == 0){
+      // The order is exists. Try to update it
+      return dbOrder
+      .update(order)
+      .where('id',order.id)
+      .where("editable",true)
+      .callback(function(err,count){
+        if (err){
+          return res.status(500).send('Database error while update order by id ('+ order.id +') ' + err.toString())
         }
-      }
-    });
+        if (count == 0){
+          return res.status(406).send('Order('+ order.id +') is not editable.')
+        }
+        if (count == 1){
+          // order saved.
+          return res.status(200).json(order);
+        }else{
+          // unexpect result
+          return res.status(500).send("unexpected rows ("+ count +") affect while update order (id: "+  order.id +").");
+        }
+      });
+    }
+    return res.status(500).json("unexpected rows, the insert affect "+ rows +" rows.");
   });
 });
 
