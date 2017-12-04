@@ -33,19 +33,15 @@
         <q-list-header>Essential Links</q-list-header>
         
         <q-side-link item to="/pos">
-          <q-item-side icon="school" />
+          <q-item-side icon="add_shopping_cart" />
           <q-item-main label="Pos" sublabel="main pos" />
         </q-side-link>
-        <q-side-link item to="/printers">
-          <q-item-side icon="school" />
-          <q-item-main label="Printers" sublabel="list avaible printers " />
-        </q-side-link>
         <q-side-link item to="/order">
-          <q-item-side icon="school" />
+          <q-item-side icon="list" />
           <q-item-main label="Orders" sublabel="List orders" />
         </q-side-link>
         <q-side-link item to="/cashcounter">
-          <q-item-side icon="school" />
+          <q-item-side icon="pan_tool" />
           <q-item-main label="Cash Counter" sublabel="Help you to count cash" />
         </q-side-link>
 

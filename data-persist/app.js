@@ -23,7 +23,7 @@ var ticketCount = undefined;
         throw Error(err);
       }
       if (response){
-        ticketCount = parseInt(response[0].ticket);
+        ticketCount = parseInt(response.ticket);
       }else{
         //no ticket count found for today
         ticketCount = 0;
@@ -72,7 +72,12 @@ app.get('/api/product/',function(req,res){
 });
 app.get('/api/order',function(req,res){
   // get order list
+  //console.log('?id is '+ req.query.id),
   dbOrder.find().make(function(filter){
+    if (req.query.editable){
+      console.log('?editable is '+ req.query.editable),
+      filter.where("editable",(req.query.editable == "false")?false:true)
+    }
     filter.callback(function(err,response){
       if (err){
         return res.status(500).send('Failed while retrieve data from database: ' + err.toString())

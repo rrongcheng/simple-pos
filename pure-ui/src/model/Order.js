@@ -18,6 +18,12 @@ export default {
       status: OrderStatus.open
     };
   },
+  getEditableOrder(httpAgentPromise){
+    return httpAgentPromise.get('//localhost:3000/api/order?editable=true')
+    .then(response=>{
+      return response.data;
+    });
+  },
   getNewOrder (httpAgentPromise,newId){
     // save order, 
     /**
@@ -44,7 +50,7 @@ export default {
     return {
       "id"          : order.id,
       "ticket"      : order.ticket,
-      "date"        : this.getOrderDate(),
+      "date"        : order.date || this.getOrderDate(),
       "editable"    : order.editable,
       "discount"    : order.discount,
       "paid"        : order.paid,

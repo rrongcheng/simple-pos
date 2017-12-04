@@ -381,21 +381,6 @@ export default {
       }
       return this.ticketCounter++;
     },
-    getFullCurOrder: function(){
-      return {
-        "id"          : this.curOrder.id,
-        "ticket"      : this.curOrder.ticket,
-        "editable"    : this.curOrder.editable,
-        "discount"    : this.curOrder.discount,
-        "paid"        : this.curOrder.paid,
-
-        "subtotal"      : this.curOrderTotal,
-        "totalDiscount" : this.curOrderDiscournt,
-        "payable"       : this.curOrderPayable,
-        "change"        : this.curOrderChange,
-        "productList" : this.curOrder.productList,
-      }
-    },
     printReceiptAndClose: function(){
       // validation
       if (this.curOrderVaild){
@@ -412,7 +397,7 @@ export default {
     },
     printOrder: function(stage){
       // save order
-      return this.$http.post('//localhost:3000/api/order/',this.getFullCurOrder())
+      return Order.saveOrder(this.$http,this.curOrder)
       .then(response =>{
         if (response.data.error){
           throw Error(response.data.error);
@@ -489,6 +474,28 @@ export default {
         this.showError(err)
       });
     },
+    loadOrder: function(){
+      return Order.getEditableOrder(this.$http)
+      .then(orderList=>{
+        this.orders = orderList.sort((a,b)=>{
+          return a.id > b.id; 
+        });
+      }).catch(error=>{
+        Alert.create({
+          color: 'negative',
+          html: "Failed to load editable orders<br>" + error.toString(),
+          position: "top-center",
+          actions:[
+            {
+              label: "See Detail",
+              handler (){
+                Dialog.create({message: JSON.stringify(error)})
+              }
+            }
+          ]
+        });
+      });
+    },
     setDiscount: function(){
       Dialog.create({
         title: 'Discount',
@@ -519,10 +526,14 @@ export default {
     }
   },
   created: function(){
-    this.newOrder();
     this.loadDate('top-class', data=>this.topClass = data);
     this.loadDate('sec-class', data=>this.secClass = data);
     this.loadDate('product', data=>this.products = data);
+    this.loadOrder().then(()=>{
+      if (this.orders.length == 0){
+        this.newOrder();
+      }
+    });
   }
 }
 </script>

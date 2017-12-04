@@ -1,15 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const axios  = require('axios');
 const escpos   = require('escpos');
-const NoSQL = require('nosql');
-
-
 
 const app = express();
-const dbTopClass = NoSQL.load('./database/top-class.nosql');
-const dbSecClass = NoSQL.load('./database/sec-class.nosql');
-const dbProduct = NoSQL.load('./database/product.nosql');
-const dbOrder = NoSQL.load('./database/order.nosql');
 
 function printOrder(order){
   if (!order){
@@ -76,8 +70,15 @@ function printOrderItem(printer,item){
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.get('/', function(req,res){
-  res.send('Hello World');
+  res.send('Escpos printer');
 });
 app.get('/api/printer/',function(req,res){
   try {
@@ -89,65 +90,30 @@ app.get('/api/printer/',function(req,res){
   }
   res.send('end');
 });
+
 app.post('/api/printer_order/',function(req,res){
   var order = req.body;
   if (!order){
-    res.json({error:'no order data received.'});
-    return;
+    return res.status(422).send("No order data received.");
   }
-  dbOrder.find().make(function(builder){
-    builder.where('id', order.id);
-    builder.callback(function(err,response){
-      if(err){
-        res.json({error:err});
-        return;
-      }
-      console.log(response)
-      if (response.length == 0){
-        // For order not saved, save it and then print
-        order.printed = true;
-        dbOrder.insert(order).callback(function(err){
-          if(err){
-            console.log(err);
-            res.json({error:"err to insert order"});
-            return;
-          }
-          printOrder(order);
-        });
-      }else{
-        // For order exists, print order
-        printOrder(order);
-      }
-      res.json(order);
-    });
-  });
-});
-app.get('/api/top-class/',function(req,res){
-  dbTopClass.find().make(function(filter) {
-    filter.sort('order',false);
-    filter.callback(function(err, response) {
-      res.json({"error":err,"data":response});
-    });
-  });
-});
-app.get('/api/sec-class/',function(req,res){
-  dbSecClass.find().make(function(filter) {
-    filter.sort('order',false);
-    filter.callback(function(err, response) {
-      res.json({"error":err,"data":response});
-    });
-  });
-});
-app.get('/api/product/',function(req,res){
-  dbProduct.find().make(function(filter) {
-    filter.sort('name',false);
-    filter.callback(function(err, response) {
-      res.json({"error":err,"data":response});
-    });
+  if (!order.id){
+    return res.status(422).send("No order id received.");
+  };
+  if (!order.templet){
+    return res.status(422).send("No print templet received.");
+  };
+  axios.get('http://localhost:3000/api/order/'+ order.id)
+  .then(response=>{
+    // printing {id:xx, templet:xx}
+    printOrder(order);
+
+    res.status(200).send('Order printed.');
+  }).catch(err=>{
+    res.status(err.response.status).json(err.response.data);
+    //res.json({"error":err, "data":{}});
   });
 });
 
-
-app.listen(3000, function () {
+app.listen(4000, function () {
   console.log('Example app listening on port 3000!')
 });
