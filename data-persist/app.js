@@ -95,7 +95,7 @@ app.get('/api/order/:id',function(req,res){
     builder.where('id', requestOrderId);
     builder.callback(function(err, response) {
       if (err){
-        return res.json({"error":err,"data":{}});
+        return res.status(500).send('Failed while retrieve data from database: ' + err.toString())
       }
       // New order not exists
       if (response.length === 0){ 
@@ -105,10 +105,10 @@ app.get('/api/order/:id',function(req,res){
       // Found 1 record
       if (response.length === 1  ){
         // Still editable
-        return res.json({"error": null,"data":response[0]});
+        return res.status(200).json(response[0]);
       }
 
-      return res.json({"error": "More than One order found with id = " + requestOrderId,"data":{}});
+      return res.status(500).send("More than One order found with id = " + requestOrderId);
     });
   });
 });

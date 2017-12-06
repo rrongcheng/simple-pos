@@ -4,15 +4,17 @@
   "description": "simple pos",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node escpos-printer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "escpos": "^2.4.4",
     "express": "^4.16.1",
-    "nosql": "^5.0.3"
+    "nosql": "^5.0.3",
+    "usb": "^1.4.0"
   }
 }

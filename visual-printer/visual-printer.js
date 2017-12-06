@@ -36,14 +36,15 @@ app.post('/api/printer_order/',function(req,res){
     // printing {id:xx, templet:xx}
     console.log("print in templet: " + order.templet);
     console.log(response.data);
-    res.status(200).send('Order printed.');
+    return res.status(200).send('Order printed.');
   }).catch(err=>{
-    res.status(err.response.status).json(err.response.data);
+    console.log(err)
+    res.status(500).send(err.toString());
     //res.json({"error":err, "data":{}});
   });
 });
 
 
 app.listen(4000, function () {
-  console.log('Example app listening on port 4000!')
+  console.log('Visual printer listening on port 4000!')
 });

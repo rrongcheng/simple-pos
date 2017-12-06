@@ -2,71 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const axios  = require('axios');
 const escpos   = require('escpos');
+const printer = require("./printer.js");
 
 const app = express();
-
-function printOrder(order){
-  if (!order){
-    console.log("empty order should't be printed.");
-    return {"error":"empty order should't be printed."}
-  }
-  var device;
-  try {
-    device  = new escpos.USB();
-  } catch (error) {
-    console.log(error);
-    return {"error":error}
-  }
-  
-  var now = new Date();
-
-  if (!device){
-    console.log('No printer found.')
-  }else{
-    const printer = new escpos.Printer(device);
-
-    device.open(function(){
-      var tmp = printer.font('a').align('ct').style('bu').size(1, 1)
-      .text("David's Sushi Noodle")
-      .text("ABN ")
-      .text("Phone: (08) 9301 4556")
-      .print(now.getDate() + "/" + (now.getMonth()+1)+ "/" + now.getFullYear() + " ")
-      .print(now.getHours() + ":"  )
-      .print(now.getMinutes() + ":"  )
-      .println(now.getSeconds() )
-      .text("Tax Invoice")
-      .align("LT")
-      .text("================================");
-
-      for(var i = 0; i < order.productList.length; i++){
-        tmp = printOrderItem(tmp,order.productList[i]);
-      }
-      tmp.text("================================")
-      .align("RT").text("SubTotal  $ " + order.subtotal.toFixed(2))
-      .text("Discount  $ " + order.discount.toFixed(2))
-      .size(2,2).text("Total  $ " + order.total.toFixed(2))
-      .size(1,1).text("GST include $ " + (order.total/1.1*0.1).toFixed(2))
-      .text("Paid  $ " + order.paid)
-      .println()
-      .size(2,2).text("Change  $ " + (order.change).toFixed(2))
-      .println()
-      .align('ct').size(1,1).text("Thanks you!")
-      .println()
-      .cut(true,4)
-      .close();
-
-      return {"error":null}
-    });
-  }
-}
-function printOrderItem(printer,item){
-  var lineWidth = 35;
-  var numWidth = 4;
-  var priceWidth = 8;
-  var nameWidth = lineWidth - numWidth - priceWidth - 4;
-  return printer.align("LT")
-  .text((item.name + "               ").substr(0,nameWidth) + ' X 1  $' + ("      " + item.price.toFixed(2).toString()).slice(2-priceWidth));
-}
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -105,15 +43,22 @@ app.post('/api/printer_order/',function(req,res){
   axios.get('http://localhost:3000/api/order/'+ order.id)
   .then(response=>{
     // printing {id:xx, templet:xx}
-    printOrder(order);
-
+    return printer.printOrder(response.data,order.templet);
+  }).then(()=>{
     res.status(200).send('Order printed.');
   }).catch(err=>{
-    res.status(err.response.status).json(err.response.data);
+    res.status(500).send(err.toString());
     //res.json({"error":err, "data":{}});
   });
 });
 
 app.listen(4000, function () {
-  console.log('Example app listening on port 3000!')
+  console.log('Example app listening on port 4000!')
+});
+
+printer.init().then(()=>{
+  console.log("printer is ready.")
+}).catch(error=>{
+  console.log("Failed to initate printer with following error:")
+  console.log(error.toString());
 });
