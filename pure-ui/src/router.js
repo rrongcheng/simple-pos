@@ -30,7 +30,8 @@ export default new VueRouter({
       children: [
         { path: '/printers', component: load('Printers') },
         { path: '/order', component: load('Orders') },
-        { path: '/cashcounter', component: load('Cashcounter') }
+        { path: '/cashcounter', component: load('Cashcounter') },
+        { path: '/daily', component: load('Daily') }
       ]
     },
     

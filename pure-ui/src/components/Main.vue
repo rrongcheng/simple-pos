@@ -44,6 +44,10 @@
           <q-item-side icon="pan_tool" />
           <q-item-main label="Cash Counter" sublabel="Help you to count cash" />
         </q-side-link>
+        <q-side-link item to="/daily">
+          <q-item-side icon="pan_tool" />
+          <q-item-main label="Daily Sale" sublabel="Total sale amount per day" />
+        </q-side-link>
 
       </q-list>
     </div>

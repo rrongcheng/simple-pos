@@ -1,6 +1,0 @@
-{"id":"20171204114855906","ticket":1,"date":"12/4/2017","editable":true,"discount":0,"paid":0,"status":"open","productList":[]}
-{"id":"20171204115926545","ticket":2,"date":"12/4/2017","editable":false,"discount":0,"paid":17,"status":"open","productList":[{"id":46,"classId":12,"name":"chips","price":5},{"id":50,"classId":12,"name":"chicken lettuce delight","price":12}]}
-{"id":"20171204120001995","ticket":3,"date":"12/4/2017","editable":true,"discount":0,"paid":0,"status":"open","productList":[]}
-{"id":"20171204120113345","ticket":4,"date":"12/4/2017","editable":false,"discount":0,"paid":"20","status":"open","productList":[{"id":54,"classId":12,"name":"cucumber with vinegar","price":6}]}
-{"id":"20171204120135831","ticket":5,"date":"12/4/2017","editable":true,"discount":0,"paid":0,"status":"open","productList":[]}
-{"id":"20171204153839406","ticket":18,"date":"12/4/2017","editable":true,"discount":0,"paid":0,"status":"open","productList":[]}

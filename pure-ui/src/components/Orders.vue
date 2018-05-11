@@ -170,7 +170,7 @@
     },
     methods: {
       refresh (callback){
-        this.$http.get('//localhost:3000/api/order')
+        this.$http.get('/api/data/order')
         .then(response=>{
           this.orders = response.data.sort(function(a,b){
             if(a.id && b.id){

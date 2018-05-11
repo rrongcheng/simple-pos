@@ -70,12 +70,13 @@
                 </div>
                 <div id="global_discount" class=" row justify-between">
                   <label>Discount ({{curOrder.discount}}%):</label>
-                  {{curOrderDiscournt.toFixed(2)}}
+                  {{curOrderDiscount.toFixed(2)}}
                 </div>
                 <div>
                   <label>Payable:</label>
                   <span id="payable_price">{{curOrderPayable.toFixed(2)}}</span>
                 </div>
+                GST=[{{curOrderGST}}]
               </div>
             </div>
             <div class="row">
@@ -283,18 +284,19 @@ export default {
       }
     },
     curOrderTotal: function(){
-      return (!this.curOrder)?null: this.curOrder.productList.reduce(function(total,ele){
-        return total + ele.price;
-      },0);
+      return (!this.curOrder)?null: Order.getSubTotal(this.curOrder);
     },
     curOrderPayable: function(){
-      return this.curOrderTotal - this.curOrderDiscournt;
+      return Order.getPayable(this.curOrderTotal, this.curOrderDiscount);
     },
     curOrderChange: function(){
-      return this.curOrder.paid - this.curOrderPayable;
+      return Order.getChange(this.curOrderPayable, this.curOrder.paid);
     },
-    curOrderDiscournt: function(){
-      return this.curOrderTotal * this.curOrder.discount/100;
+    curOrderDiscount: function(){
+      return Order.getdiscount(this.curOrderTotal, this.curOrder.discount);
+    },
+    curOrderGST: function(){
+      return Order.getGST(this.curOrderPayable);
     },
     curOrderVaild: function(){
       if (this.curOrderPayable <= 0){
@@ -461,7 +463,7 @@ export default {
     loadDate : function(name,callback){
       Loading.show({message: 'Loading '+ name});
 
-      this.$http.get('//localhost:3000/api/'+name+'/')
+      this.$http.get('/api/data/'+name+'/')
       .then(response =>{
         Loading.hide();
         if (response.error){
@@ -532,6 +534,8 @@ export default {
     this.loadOrder().then(()=>{
       if (this.orders.length == 0){
         this.newOrder();
+      }else{
+        this.curOrderIndex = 0;
       }
     });
   }

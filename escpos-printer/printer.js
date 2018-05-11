@@ -42,44 +42,55 @@ module.exports = {
         return this.printOrderReceipt(order);
       };
       throw Error("No stage match ["+ stage +"].")
+    }).then(()=>{
+      // Receipt print twice
+      if (stage == "receipt"){
+        return this.printOrderReceipt(order);
+      };
+      throw Error("No stage match ["+ stage +"].")
+    }).then(()=>{
+
+      printer.close()
     }).catch(error=>{
       device.close();
       throw Error(error);
     });
     
   },
-  printOrderKitchen(order){
+  printOrderReceipt(order){
+    console.log(order);
     var now = new Date();
     var tmp = printer.font('a').align('ct').style('bu').size(1, 1)
     .text("David's Sushi Noodle")
-    .text("ABN ")
+    .text("ABN 21055176304")
     .text("Phone: (08) 9301 4556")
     .print(now.getDate() + "/" + (now.getMonth()+1)+ "/" + now.getFullYear() + " ")
     .print(now.getHours() + ":"  )
     .print(now.getMinutes() + ":"  )
     .println(now.getSeconds() )
     .text("Tax Invoice")
+    .size(2,2).text("Ticket: " + order.ticket)
     .align("LT")
-    .text("================================");
+    .size(1,1).text("================================")
+    .size(2,2);
 
     for(var i = 0; i < order.productList.length; i++){
-      tmp = printOrderItem(tmp,order.productList[i]);
+      tmp = this.printOrderItem(tmp,order.productList[i]);
     }
     return tmp.text("================================")
-    .align("RT").text("SubTotal  $ " + order.subtotal.toFixed(2))
+    .align("RT").size(1,1).text("SubTotal  $ " + order.subtotal.toFixed(2))
     .text("Discount  $ " + order.discount.toFixed(2))
-    .size(2,2).text("Total  $ " + order.total.toFixed(2))
-    .size(1,1).text("GST include $ " + (order.total/1.1*0.1).toFixed(2))
+    .size(2,2).text("Total  $ " + order.payable.toFixed(2))
+    .size(1,1).text("GST include $ " + order.gst.toFixed(2))
     .text("Paid  $ " + order.paid)
     .println()
-    .size(2,2).text("Change  $ " + (order.change).toFixed(2))
+    .text("Change  $ " + (order.change).toFixed(2))
     .println()
     .align('ct').size(1,1).text("Thanks you!")
     .println()
-    .cut(true,4)
-    .close();
+    .cut(true,4);
   },
-  printOrderReceipt(){
+  printOrderKitchen(order){
     var now = new Date();
     var tmp = printer.font('a').align('ct').style('bu').size(1, 1)
     .text("Kitchen")
@@ -89,14 +100,14 @@ module.exports = {
     .println(now.getSeconds() )
     .text("This is NOT a Tax Invoice")
     .align("LT")
-    .text("================================");
+    .text("================================")
+    .size(2,2);
 
     for(var i = 0; i < order.productList.length; i++){
-      tmp = tmp.align("LT").text(item.name.substr(0,LineWidth));
+      tmp = tmp.text((i+1)+". " + order.productList[i].name.substr(0,LineWidth));
     }
-    return tmp.text("================================")
-    .cut(true,4)
-    .close();
+    return tmp.size(1,1).text("================================")
+    .cut(true,4);
   },
   printOrderItem(printer,item){
     var numWidth = 4;
